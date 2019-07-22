@@ -352,6 +352,8 @@ impl srml_timestamp::Trait for Runtime {
 	type MinimumPeriod = MinimumPeriod;
 }
 
+impl srml_babe::Trait for Runtime {}
+
 /// Adds one to the given input and returns the final result.
 #[inline(never)]
 fn benchmark_add_one(i: u64) -> u64 {
@@ -529,6 +531,7 @@ cfg_if! {
 					let authorities = system::authorities();
 					let authorities: Vec<_> = authorities.into_iter().map(|x|(x, 1)).collect();
 					consensus_babe::Epoch {
+						start_slot: <srml_babe::Module<Runtime>>::epoch_start_slot(),
 						authorities,
 						randomness: <srml_babe::Module<Runtime>>::randomness(),
 						epoch_index: 1,
@@ -685,6 +688,7 @@ cfg_if! {
 					let authorities = system::authorities();
 					let authorities: Vec<_> = authorities.into_iter().map(|x|(x, 1)).collect();
 					consensus_babe::Epoch {
+						start_slot: <srml_babe::Module<Runtime>>::epoch_start_slot(),
 						authorities,
 						randomness: <srml_babe::Module<Runtime>>::randomness(),
 						epoch_index: 1,
