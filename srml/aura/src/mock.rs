@@ -19,7 +19,7 @@
 #![cfg(test)]
 
 use primitives::{
-	KeytypeId, BuildStorage, traits::IdentityLookup,
+	KeyTypeId, BuildStorage, traits::IdentityLookup,
 	testing::{UINT_DUMMY_KEY, Header, UintAuthorityId}
 };
 use srml_support::{impl_outer_origin, parameter_types};
@@ -47,7 +47,7 @@ impl system::Trait for Test {
 	type BlockNumber = u64;
 	type Hash = H256;
 	type Hashing = ::primitives::traits::BlakeTwo256;
-	type AccountId = sr25519::Public;
+	type AccountId = u64;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Header = Header;
 	type WeightMultiplierUpdate = ();
@@ -59,6 +59,22 @@ impl timestamp::Trait for Test {
 	type Moment = u64;
 	type OnTimestampSet = Aura;
 	type MinimumPeriod = MinimumPeriod;
+}
+
+impl session::Trait for Test {
+	type OnSessionEnding = session::historical::NoteHistoricalRoot<Test, ()>;
+	type Keys = u64;
+	type ShouldEndSession = session::PeriodicSessions<u32, u32>;
+	type SessionHandler =();
+	type Event = ();
+	type ValidatorId = u64;
+	type ValidatorIdOf = staking::StashOf<Test>;
+	type SelectInitialValidators = ();
+}
+
+impl session::historical::Trait for Test {
+	type FullIdentification = staking::Exposure<u64, u64>;
+	type FullIdentificationOf = staking::ExposureOf<Test>;
 }
 
 impl Trait for Test {
@@ -77,3 +93,4 @@ pub fn new_test_ext(authorities: Vec<sr25519::Public>) -> runtime_io::TestExtern
 
 pub type System = system::Module<Test>;
 pub type Aura = Module<Test>;
+pub type Staking = staking::Module<Test>;

@@ -27,8 +27,7 @@ use srml_support::{impl_outer_origin, impl_outer_event, parameter_types};
 use substrate_primitives::{H256, Blake2Hasher};
 use parity_codec::{Encode, Decode};
 use crate::{
-	AuthorityId, AuthoritySignature, GenesisConfig, Trait, Module, Signal, Call,
-	ConsensusLog,
+	AuthorityId, AuthoritySignature, GenesisConfig, Trait, Module, Call, ConsensusLog,
 };
 use substrate_finality_grandpa_primitives::GRANDPA_ENGINE_ID;
 
@@ -36,7 +35,7 @@ impl_outer_origin!{
 	pub enum Origin for Test {}
 }
 
-pub fn grandpa_log(log: ConsensusLog<u64>) -> DigestItem<H256> {
+pub fn grandpa_log(log: ConsensusLog<u64, u64, Header>) -> DigestItem<H256> {
 	DigestItem::Consensus(GRANDPA_ENGINE_ID, log.encode())
 }
 
@@ -47,6 +46,7 @@ impl Trait for Test {
 	type Event = TestEvent;
 	type Signature = AuthoritySignature;
 	type Block = Block<TestXt<Call<Test>>>;
+	type KeyOwnerSystem = ();
 }
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
