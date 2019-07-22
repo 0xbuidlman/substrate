@@ -353,7 +353,8 @@ mod tests {
 			});
 
 			let mut digest = Digest::<H256>::default();
-			digest.push(<DigestItem as CompatibleDigestItem>::babe_pre_digest(slot_num));
+			// FIXME: need to add proper babe pre digest
+			// digest.push(<DigestItem as CompatibleDigestItem>::babe_pre_digest(slot_num));
 			let proposer = proposer_factory.init(&parent_header).unwrap();
 			let new_block = proposer.propose(
 				inherent_data,
