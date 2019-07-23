@@ -36,7 +36,7 @@ use substrate_client::{
 use runtime_primitives::{
 	ApplyResult,
 	create_runtime_str,
-	transaction_validity::TransactionValidity,
+	transaction_validity::{TransactionValidity, ValidTransaction},
 	traits::{
 		BlindCheckable, BlakeTwo256, Block as BlockT, Extrinsic as ExtrinsicT,
 		GetNodeBlockType, GetRuntimeBlockType, Verify, IdentityLookup
@@ -328,6 +328,8 @@ impl From<srml_system::Event> for Event {
 parameter_types! {
 	pub const BlockHashCount: BlockNumber = 250;
 	pub const MinimumPeriod: u64 = 5;
+	pub const MaximumBlockWeight: u64 = 1024 * 1024;
+	pub const MaximumBlockLength: u64 = 1024 * 1024;
 }
 
 impl srml_system::Trait for Runtime {
@@ -342,6 +344,8 @@ impl srml_system::Trait for Runtime {
 	type Event = Event;
 	type WeightMultiplierUpdate = ();
 	type BlockHashCount = BlockHashCount;
+	type MaximumBlockLength = MaximumBlockLength;
+	type MaximumBlockWeight = MaximumBlockWeight;
 }
 
 impl srml_timestamp::Trait for Runtime {
@@ -425,13 +429,13 @@ cfg_if! {
 			impl client_api::TaggedTransactionQueue<Block> for Runtime {
 				fn validate_transaction(utx: <Block as BlockT>::Extrinsic) -> TransactionValidity {
 					if let Extrinsic::IncludeData(data) = utx {
-						return TransactionValidity::Valid {
+						return TransactionValidity::Valid(ValidTransaction {
 							priority: data.len() as u64,
 							requires: vec![],
 							provides: vec![data],
 							longevity: 1,
 							propagate: false,
-						};
+						});
 					}
 
 					system::validate_transaction(utx)
@@ -575,13 +579,13 @@ cfg_if! {
 			impl client_api::TaggedTransactionQueue<Block> for Runtime {
 				fn validate_transaction(utx: <Block as BlockT>::Extrinsic) -> TransactionValidity {
 					if let Extrinsic::IncludeData(data) = utx {
-						return TransactionValidity::Valid {
+						return TransactionValidity::Valid(ValidTransaction{
 							priority: data.len() as u64,
 							requires: vec![],
 							provides: vec![data],
 							longevity: 1,
 							propagate: false,
-						};
+						});
 					}
 
 					system::validate_transaction(utx)
